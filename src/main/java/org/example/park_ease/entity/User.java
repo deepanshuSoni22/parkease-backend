@@ -2,6 +2,8 @@ package org.example.park_ease.entity;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 public class User {
 
@@ -14,6 +16,17 @@ public class User {
 
     @Column(nullable = false)
     private String password;
+
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ParkingLot> parkingLotList;
+
+    public List<ParkingLot> getParkingLotList() {
+        return parkingLotList;
+    }
+
+    public void setParkingLotList(List<ParkingLot> parkingLotList) {
+        this.parkingLotList = parkingLotList;
+    }
 
     public User() {
     }

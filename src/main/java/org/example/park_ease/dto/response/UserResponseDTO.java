@@ -1,8 +1,8 @@
-package org.example.park_ease.dto;
+package org.example.park_ease.dto.response;
 
-public class UserResponseDto {
+public class UserResponseDTO {
 
-    public UserResponseDto() {
+    public UserResponseDTO() {
     }
 
     private String username;
