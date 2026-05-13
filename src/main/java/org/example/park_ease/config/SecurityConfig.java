@@ -52,8 +52,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/register").permitAll()
                         .requestMatchers("/all-users").hasRole("ADMIN")
-                        .requestMatchers("/all-parking-lots").hasRole("ADMIN")
-                        .requestMatchers("/all-parking-lots").hasRole("USER")
+                        .requestMatchers("/all-parking-lots").hasAnyRole("ADMIN", "USER")
                         .anyRequest().authenticated()
                 )
                 .httpBasic(Customizer.withDefaults());
