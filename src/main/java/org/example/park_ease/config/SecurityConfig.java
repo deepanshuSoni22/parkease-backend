@@ -38,6 +38,7 @@ public class SecurityConfig {
                     .builder()
                     .username(user.getUsername())
                     .password(user.getPassword())
+                    .roles(user.getRole().name())
                     .build();
         };
 
@@ -50,6 +51,9 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/register").permitAll()
+                        .requestMatchers("/all-users").hasRole("ADMIN")
+                        .requestMatchers("/all-parking-lots").hasRole("ADMIN")
+                        .requestMatchers("/all-parking-lots").hasRole("USERS")
                         .anyRequest().authenticated()
                 )
                 .httpBasic(Customizer.withDefaults());

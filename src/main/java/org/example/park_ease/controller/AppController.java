@@ -27,7 +27,7 @@ public class AppController {
 
     @PostMapping("/register")
     public UserResponseDTO register(@RequestBody UserRequestDTO requestDTO) {
-        return userService.addUser(requestDTO);
+        return userService.register(requestDTO);
     }
 
     @GetMapping("/")
@@ -35,17 +35,25 @@ public class AppController {
         return "Welcome, " + authentication.getName() + " 🙋‍♂️";
     }
 
+    @PostMapping("/create-parking-lot")
+    public ParkingLotResponseDTO createParkingLot(@RequestBody ParkingLotRequestDTO requestDTO) {
+        return parkingLotService.createParkingLot(requestDTO);
+    }
+
+    @GetMapping("/my-parking-lots")
+    public List<ParkingLotResponseDTO> getMyParkingLots(Authentication authentication) {
+        return parkingLotService.getMyParkingLots(authentication.getName());
+    }
+
+// ---------------------------------------------------------------------------------------------
+
+    // Admin specific routes
     @GetMapping("/all-users")
     public List<UserResponseDTO> getAllUsers() {
         return userService.getAllUsers();
     }
 
-    @PostMapping("/parking-lots")
-    public ParkingLotResponseDTO createParkingLot(@RequestBody ParkingLotRequestDTO requestDTO) {
-        return parkingLotService.createParkingLot(requestDTO);
-    }
-
-    @GetMapping("/list-parking-lots")
+    @GetMapping("/all-parking-lots")
     public List<ParkingLotResponseDTO> listAllParkingLots() {
         return parkingLotService.getAllParkingLots();
     }
