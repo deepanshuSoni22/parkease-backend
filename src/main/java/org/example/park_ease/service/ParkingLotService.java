@@ -29,7 +29,7 @@ public class ParkingLotService {
             throw new RuntimeException("Parking Lot Already Exists!");
         }
 
-        // getting logged in username
+        // get logged-in username
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
 
@@ -44,8 +44,8 @@ public class ParkingLotService {
         parkingLot.setName(requestDTO.getName());
         parkingLot.setLocation(requestDTO.getLocation());
         parkingLot.setHourlyRate(requestDTO.getHourlyRate());
-        parkingLot.setDailyMax(requestDTO.getDailyMax());
-        parkingLot.setActive(requestDTO.getActive());
+        parkingLot.setTotalSlots(requestDTO.getTotalSlots());
+        parkingLot.setIsActive(requestDTO.getIsActive());
 
         // backend-controller user
         parkingLot.setOwner(user);
@@ -59,8 +59,8 @@ public class ParkingLotService {
         dto.setName(savedParkingLot.getName());
         dto.setLocation(savedParkingLot.getLocation());
         dto.setHourlyRate(savedParkingLot.getHourlyRate());
-        dto.setDailyMax(savedParkingLot.getDailyMax());
-        dto.setActive(savedParkingLot.getActive());
+        dto.setTotalSlots(savedParkingLot.getTotalSlots());
+        dto.setIsActive(savedParkingLot.getIsActive());
         dto.setOwnerName(username);
 
         return dto;
@@ -78,8 +78,8 @@ public class ParkingLotService {
                     dto.setName(parkingLot.getName());
                     dto.setLocation(parkingLot.getLocation());
                     dto.setHourlyRate(parkingLot.getHourlyRate());
-                    dto.setDailyMax(parkingLot.getDailyMax());
-                    dto.setActive(parkingLot.getActive());
+                    dto.setTotalSlots(parkingLot.getTotalSlots());
+                    dto.setIsActive(parkingLot.getIsActive());
                     dto.setOwnerName(parkingLot.getOwner().getUsername());
 
                     return dto;
@@ -98,8 +98,8 @@ public class ParkingLotService {
                     dto.setName(parkingLot.getName());
                     dto.setLocation(parkingLot.getLocation());
                     dto.setHourlyRate(parkingLot.getHourlyRate());
-                    dto.setDailyMax(parkingLot.getDailyMax());
-                    dto.setActive(parkingLot.getActive());
+                    dto.setTotalSlots(parkingLot.getTotalSlots());
+                    dto.setIsActive(parkingLot.getIsActive());
                     dto.setOwnerName(parkingLot.getOwner().getUsername());
 
                     return dto;

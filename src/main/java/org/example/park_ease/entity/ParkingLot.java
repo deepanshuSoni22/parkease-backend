@@ -3,7 +3,10 @@ package org.example.park_ease.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
+@Table(name = "parking_lot")
 public class ParkingLot {
 
     @Id
@@ -18,14 +21,27 @@ public class ParkingLot {
 
     private Double hourlyRate;
 
-    private Integer dailyMax;
+    private Integer totalSlots;
 
-    private Boolean active;
+    private Boolean isActive;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "owner_id", nullable = false)
     @JsonIgnore
     private User owner;
+
+    @OneToMany(mappedBy = "parkingLot",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
+    private List<ParkingSlot> parkingSlot;
+
+    public List<ParkingSlot> getParkingSlot() {
+        return parkingSlot;
+    }
+
+    public void setParkingSlot(List<ParkingSlot> parkingSlot) {
+        this.parkingSlot = parkingSlot;
+    }
 
     public ParkingLot() {
     }
@@ -71,19 +87,19 @@ public class ParkingLot {
         this.hourlyRate = hourlyRate;
     }
 
-    public Integer getDailyMax() {
-        return dailyMax;
+    public Integer getTotalSlots() {
+        return totalSlots;
     }
 
-    public void setDailyMax(Integer dailyMax) {
-        this.dailyMax = dailyMax;
+    public void setTotalSlots(Integer totalSlots) {
+        this.totalSlots = totalSlots;
     }
 
-    public Boolean getActive() {
-        return active;
+    public Boolean getIsActive() {
+        return isActive;
     }
 
-    public void setActive(Boolean active) {
-        this.active = active;
+    public void setIsActive(Boolean isActive) {
+        this.isActive = isActive;
     }
 }

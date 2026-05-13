@@ -5,8 +5,8 @@ public class ParkingLotRequestDTO {
     private String name;
     private String location;
     private Double hourlyRate;
-    private Integer dailyMax;
-    private Boolean active;
+    private Integer totalSlots;
+    private Boolean isActive;
 
     public ParkingLotRequestDTO() {
     }
@@ -35,19 +35,19 @@ public class ParkingLotRequestDTO {
         this.hourlyRate = hourlyRate;
     }
 
-    public Integer getDailyMax() {
-        return dailyMax;
+    public Integer getTotalSlots() {
+        return totalSlots;
     }
 
-    public void setDailyMax(Integer dailyMax) {
-        this.dailyMax = dailyMax;
+    public void setTotalSlots(Integer totalSlots) {
+        this.totalSlots = totalSlots;
     }
 
-    public Boolean getActive() {
-        return active;
+    public Boolean getIsActive() {
+        return isActive;
     }
 
-    public void setActive(Boolean active) {
-        this.active = active;
+    public void setIsActive(Boolean isActive) {
+        this.isActive = isActive;
     }
 }

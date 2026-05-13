@@ -1,12 +1,16 @@
 package org.example.park_ease.controller;
 
 import org.example.park_ease.dto.request.ParkingLotRequestDTO;
+import org.example.park_ease.dto.request.ParkingSlotRequestDTO;
 import org.example.park_ease.dto.request.UserRequestDTO;
 import org.example.park_ease.dto.response.ParkingLotResponseDTO;
+import org.example.park_ease.dto.response.ParkingSlotResponseDTO;
 import org.example.park_ease.dto.response.UserResponseDTO;
 import org.example.park_ease.service.ParkingLotService;
+import org.example.park_ease.service.ParkingSlotService;
 import org.example.park_ease.service.UserService;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,10 +23,12 @@ public class AppController {
 
     private final UserService userService;
     private final ParkingLotService parkingLotService;
+    private final ParkingSlotService parkingSlotService;
 
-    public AppController(UserService userService, ParkingLotService parkingLotService) {
+    public AppController(UserService userService, ParkingLotService parkingLotService, ParkingSlotService parkingSlotService) {
         this.userService = userService;
         this.parkingLotService = parkingLotService;
+        this.parkingSlotService = parkingSlotService;
     }
 
     @PostMapping("/register")
@@ -44,6 +50,12 @@ public class AppController {
     public List<ParkingLotResponseDTO> getMyParkingLots(Authentication authentication) {
         return parkingLotService.getMyParkingLots(authentication.getName());
     }
+
+    @PostMapping("/create-parking-slot")
+    public ParkingSlotResponseDTO createParkingSlot(@RequestBody ParkingSlotRequestDTO requestDTO) {
+        return parkingSlotService.createParkingSlot(requestDTO);
+    }
+
 
 // ---------------------------------------------------------------------------------------------
 

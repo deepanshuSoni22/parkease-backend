@@ -3,9 +3,8 @@ package org.example.park_ease.entity;
 import jakarta.persistence.*;
 import org.example.park_ease.enums.Role;
 
-import java.util.List;
-
 @Entity
+@Table(name = "user")
 public class User {
 
     @Id
@@ -18,8 +17,8 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ParkingLot> parkingLotList;
+    @OneToOne(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
+    private ParkingLot parkingLot;
 
     @Enumerated(EnumType.STRING)
     private Role role;
@@ -32,12 +31,12 @@ public class User {
         this.role = role;
     }
 
-    public List<ParkingLot> getParkingLotList() {
-        return parkingLotList;
+    public ParkingLot getParkingLot() {
+        return parkingLot;
     }
 
-    public void setParkingLotList(List<ParkingLot> parkingLotList) {
-        this.parkingLotList = parkingLotList;
+    public void setParkingLot(ParkingLot parkingLot) {
+        this.parkingLot = parkingLot;
     }
 
     public User() {
