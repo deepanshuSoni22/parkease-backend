@@ -53,7 +53,7 @@ public class SecurityConfig {
                         .requestMatchers("/register").permitAll()
                         .requestMatchers("/all-users").hasRole("ADMIN")
                         .requestMatchers("/all-parking-lots").hasRole("ADMIN")
-                        .requestMatchers("/all-parking-lots").hasRole("USERS")
+                        .requestMatchers("/all-parking-lots").hasRole("USER")
                         .anyRequest().authenticated()
                 )
                 .httpBasic(Customizer.withDefaults());
