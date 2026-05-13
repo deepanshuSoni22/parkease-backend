@@ -1,6 +1,7 @@
 package org.example.park_ease.entity;
 
 import jakarta.persistence.*;
+import org.example.park_ease.enums.Role;
 
 import java.util.List;
 
@@ -19,6 +20,17 @@ public class User {
 
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ParkingLot> parkingLotList;
+
+    @Enumerated(EnumType.STRING)
+    private Role role;
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
 
     public List<ParkingLot> getParkingLotList() {
         return parkingLotList;

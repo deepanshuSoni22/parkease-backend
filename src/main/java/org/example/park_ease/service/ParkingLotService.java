@@ -87,4 +87,23 @@ public class ParkingLotService {
                 .toList();
     }
 
+    public List<ParkingLotResponseDTO> getMyParkingLots(String username) {
+
+        List<ParkingLot> parkingLots = parkingLotRepository.findByOwnerUsername(username);
+
+        return parkingLots.stream()
+                .map(parkingLot -> {
+                    ParkingLotResponseDTO dto = new ParkingLotResponseDTO();
+
+                    dto.setName(parkingLot.getName());
+                    dto.setLocation(parkingLot.getLocation());
+                    dto.setHourlyRate(parkingLot.getHourlyRate());
+                    dto.setDailyMax(parkingLot.getDailyMax());
+                    dto.setActive(parkingLot.getActive());
+                    dto.setOwnerName(parkingLot.getOwner().getUsername());
+
+                    return dto;
+                })
+                .toList();
+    }
 }
