@@ -52,6 +52,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/register").permitAll()
                         .requestMatchers("/all-users").hasRole("ADMIN")
+                        .requestMatchers("/create-parking-lot").hasRole("OWNER")
+                        .requestMatchers("/create-parking-slot").hasRole("OWNER")
                         .requestMatchers("/all-parking-lots").hasAnyRole("ADMIN", "USER")
                         .anyRequest().authenticated()
                 )
