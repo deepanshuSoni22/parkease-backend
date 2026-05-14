@@ -53,57 +53,40 @@ public class ParkingLotService {
         // saving to Database
         ParkingLot savedParkingLot = parkingLotRepository.save(parkingLot);
 
-        // Entity -> DTO mapping
-        ParkingLotResponseDTO dto = new ParkingLotResponseDTO();
-
-        dto.setName(savedParkingLot.getName());
-        dto.setLocation(savedParkingLot.getLocation());
-        dto.setHourlyRate(savedParkingLot.getHourlyRate());
-        dto.setTotalSlots(savedParkingLot.getTotalSlots());
-        dto.setIsActive(savedParkingLot.getIsActive());
-        dto.setOwnerName(username);
-
-        return dto;
+        return mapToResponseDTO(savedParkingLot);
 
     }
 
     public List<ParkingLotResponseDTO> getAllParkingLots() {
 
-        List<ParkingLot> parkingLots = parkingLotRepository.findAll();
-
-        return parkingLots.stream()
-                .map(parkingLot -> {
-                    ParkingLotResponseDTO dto = new ParkingLotResponseDTO();
-
-                    dto.setName(parkingLot.getName());
-                    dto.setLocation(parkingLot.getLocation());
-                    dto.setHourlyRate(parkingLot.getHourlyRate());
-                    dto.setTotalSlots(parkingLot.getTotalSlots());
-                    dto.setIsActive(parkingLot.getIsActive());
-                    dto.setOwnerName(parkingLot.getOwner().getUsername());
-
-                    return dto;
-                })
+        return parkingLotRepository.findAll()
+                .stream()
+                .map(this::mapToResponseDTO)
                 .toList();
+
     }
 
     public List<ParkingLotResponseDTO> getMyParkingLots(String username) {
 
-        List<ParkingLot> parkingLots = parkingLotRepository.findByOwnerUsername(username);
-
-        return parkingLots.stream()
-                .map(parkingLot -> {
-                    ParkingLotResponseDTO dto = new ParkingLotResponseDTO();
-
-                    dto.setName(parkingLot.getName());
-                    dto.setLocation(parkingLot.getLocation());
-                    dto.setHourlyRate(parkingLot.getHourlyRate());
-                    dto.setTotalSlots(parkingLot.getTotalSlots());
-                    dto.setIsActive(parkingLot.getIsActive());
-                    dto.setOwnerName(parkingLot.getOwner().getUsername());
-
-                    return dto;
-                })
+        return parkingLotRepository.findByOwnerUsername(username)
+                .stream()
+                .map(this::mapToResponseDTO)
                 .toList();
+
     }
+
+    // Private mapper method
+    private ParkingLotResponseDTO mapToResponseDTO(ParkingLot parkingLot) {
+
+        ParkingLotResponseDTO dto = new ParkingLotResponseDTO();
+        dto.setName(parkingLot.getName());
+        dto.setLocation(parkingLot.getLocation());
+        dto.setHourlyRate(parkingLot.getHourlyRate());
+        dto.setTotalSlots(parkingLot.getTotalSlots());
+        dto.setIsActive(parkingLot.getIsActive());
+        dto.setOwnerName(parkingLot.getOwner().getUsername());
+        return dto;
+
+    }
+
 }
