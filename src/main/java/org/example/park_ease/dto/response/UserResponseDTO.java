@@ -4,11 +4,12 @@ import org.example.park_ease.enums.Role;
 
 public class UserResponseDTO {
 
+    private String username;
+    private Role role;
+
     public UserResponseDTO() {
     }
 
-    private String username;
-    private Role role;
 
     public Role getRole() {
         return role;
