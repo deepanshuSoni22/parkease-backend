@@ -8,7 +8,7 @@ import jakarta.persistence.*;
 public class ParkingSlot {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Column(name = "slot_number")
