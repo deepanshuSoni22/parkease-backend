@@ -6,8 +6,6 @@ import org.example.park_ease.entity.ParkingLot;
 import org.example.park_ease.entity.User;
 import org.example.park_ease.repository.ParkingLotRepository;
 import org.example.park_ease.repository.UserRepository;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,15 +21,20 @@ public class ParkingLotService {
         this.userRepository = userRepository;
     }
 
-    public ParkingLotResponseDTO createParkingLot(ParkingLotRequestDTO requestDTO) {
+    public ParkingLotResponseDTO getParkingLotById(int id) {
+
+        ParkingLot parkingLot =  parkingLotRepository.findById(id).orElseThrow(
+                () -> new RuntimeException("ParkingLot not found!")
+        );
+
+        return mapToResponseDTO(parkingLot);
+    }
+
+    public ParkingLotResponseDTO createParkingLot(ParkingLotRequestDTO requestDTO, String username) {
 
         if (parkingLotRepository.findByName(requestDTO.getName()).isPresent()) {
             throw new RuntimeException("Parking Lot Already Exists!");
         }
-
-        // get logged-in username
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
 
         User user = userRepository
                 .findByUsername(username)
@@ -45,7 +48,7 @@ public class ParkingLotService {
         parkingLot.setLocation(requestDTO.getLocation());
         parkingLot.setHourlyRate(requestDTO.getHourlyRate());
         parkingLot.setTotalSlots(requestDTO.getTotalSlots());
-        parkingLot.setIsActive(requestDTO.getIsActive());
+        parkingLot.setActive(requestDTO.getActive());
 
         // backend-controller user
         parkingLot.setOwner(user);
@@ -75,15 +78,33 @@ public class ParkingLotService {
 
     }
 
+    public void deleteParkingLot(int id, String username) {
+
+        ParkingLot parkingLot = parkingLotRepository.findById(id).orElseThrow(
+                () -> new RuntimeException("ParkingLot not found!")
+        );
+
+        if (!parkingLot.getOwner().getUsername().equals(username)) {
+            throw new RuntimeException("Authorization Failed!");
+        }
+
+        // IMPORTANT: Force load the parking slots collection before deletion
+        // This ensures the cascade delete will work properly
+        parkingLot.getParkingSlot().isEmpty(); // This triggers lazy loading
+
+        parkingLotRepository.delete(parkingLot);
+    }
+
     // Private mapper method
     private ParkingLotResponseDTO mapToResponseDTO(ParkingLot parkingLot) {
 
         ParkingLotResponseDTO dto = new ParkingLotResponseDTO();
+        dto.setId(parkingLot.getId());
         dto.setName(parkingLot.getName());
         dto.setLocation(parkingLot.getLocation());
         dto.setHourlyRate(parkingLot.getHourlyRate());
         dto.setTotalSlots(parkingLot.getTotalSlots());
-        dto.setIsActive(parkingLot.getIsActive());
+        dto.setActive(parkingLot.getActive());
         dto.setOwnerName(parkingLot.getOwner().getUsername());
         return dto;
 

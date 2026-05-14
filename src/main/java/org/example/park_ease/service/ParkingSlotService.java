@@ -8,9 +8,9 @@ import org.example.park_ease.entity.User;
 import org.example.park_ease.repository.ParkingLotRepository;
 import org.example.park_ease.repository.ParkingSlotRepository;
 import org.example.park_ease.repository.UserRepository;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class ParkingSlotService {
@@ -25,11 +25,23 @@ public class ParkingSlotService {
         this.userRepository = userRepository;
     }
 
-    public ParkingSlotResponseDTO createParkingSlot(ParkingSlotRequestDTO requestDTO) {
+    public ParkingSlotResponseDTO getParkingSlotById(int id) {
+        ParkingSlot parkingSlot = parkingSlotRepository.findById(id).orElseThrow(
+                () -> new RuntimeException("ParkingSlot Not Found!")
+        );
 
-        // get logged-in username
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
+        return mapToResponseDTO(parkingSlot);
+    }
+
+    public List<ParkingSlotResponseDTO> getAllParkingSlots() {
+
+        return parkingSlotRepository.findAll()
+                .stream()
+                .map(this::mapToResponseDTO)
+                .toList();
+    }
+
+    public ParkingSlotResponseDTO createParkingSlot(ParkingSlotRequestDTO requestDTO, String username) {
 
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found!"));
@@ -47,7 +59,7 @@ public class ParkingSlotService {
 
         parkingSlot.setSlotNumber(requestDTO.getSlotNumber());
         parkingSlot.setSlotType(requestDTO.getSlotType());
-        parkingSlot.setIsAvailable(requestDTO.getIsAvailable());
+        parkingSlot.setAvailable(requestDTO.getIsAvailable());
 
 
         // Saving to Database
@@ -58,12 +70,31 @@ public class ParkingSlotService {
 
         dto.setSlotNumber(parkingSlot.getSlotNumber());
         dto.setSlotType(parkingSlot.getSlotType());
-        dto.setIsAvailable(parkingSlot.getIsAvailable());
+        dto.setAvailable(parkingSlot.getAvailable());
 
         return dto;
     }
 
+    private ParkingSlotResponseDTO mapToResponseDTO(ParkingSlot parkingSlot) {
 
+        ParkingSlotResponseDTO dto = new ParkingSlotResponseDTO();
+        dto.setId(parkingSlot.getId());
+        dto.setSlotNumber(parkingSlot.getSlotNumber());
+        dto.setSlotType(parkingSlot.getSlotType());
+        dto.setAvailable(parkingSlot.getAvailable());
 
+        return dto;
+    }
 
+    public void deleteParkingSlotById(int id, String username) {
+        ParkingSlot parkingSlot = parkingSlotRepository.findById(id).orElseThrow(
+                () -> new RuntimeException("Slot not found!")
+        );
+
+        if (!parkingSlot.getParkingLot().getOwner().getUsername().equals(username)) {
+            throw new RuntimeException("Authorization Failed!");
+        }
+
+        parkingSlotRepository.delete(parkingSlot);
+    }
 }
