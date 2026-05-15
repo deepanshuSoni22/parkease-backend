@@ -8,7 +8,7 @@ import jakarta.persistence.*;
 public class ParkingSlot {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Column(name = "slot_number")
@@ -41,12 +41,12 @@ public class ParkingSlot {
         this.id = id;
     }
 
-    public Boolean getIsAvailable() {
+    public Boolean getAvailable() {
         return isAvailable;
     }
 
-    public void setIsAvailable(Boolean isAvailable) {
-        this.isAvailable = isAvailable;
+    public void setAvailable(Boolean available) {
+        isAvailable = available;
     }
 
     public String getSlotType() {

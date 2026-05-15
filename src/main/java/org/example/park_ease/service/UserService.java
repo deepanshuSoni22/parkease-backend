@@ -44,6 +44,7 @@ public class UserService {
 
         // Entity -> DTO
         UserResponseDTO dto = new UserResponseDTO();
+        dto.setId(user.getId());
         dto.setUsername(requestDTO.getUsername());
         dto.setRole(requestDTO.getRole());
 
@@ -60,6 +61,7 @@ public class UserService {
                 .map(user -> {
                     UserResponseDTO dto = new UserResponseDTO();
 
+                    dto.setId(user.getId());
                     dto.setUsername(user.getUsername());
                     dto.setRole(user.getRole());
 
@@ -68,4 +70,27 @@ public class UserService {
                 .toList();
     }
 
+    public UserResponseDTO getUser(int id) {
+
+        User user = userRepository.findById(id).orElseThrow(
+                () -> new RuntimeException("User not found!")
+        );
+
+        UserResponseDTO dto = new UserResponseDTO();
+        dto.setId(user.getId());
+        dto.setUsername(user.getUsername());
+        dto.setRole(user.getRole());
+
+
+        return dto;
+    }
+
+    public void deleteUser(int id) {
+
+        User user = userRepository.findById(id).orElseThrow(
+                () -> new RuntimeException("User not found!")
+        );
+
+        userRepository.delete(user);
+    }
 }
