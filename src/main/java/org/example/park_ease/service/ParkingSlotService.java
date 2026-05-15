@@ -9,6 +9,7 @@ import org.example.park_ease.repository.ParkingLotRepository;
 import org.example.park_ease.repository.ParkingSlotRepository;
 import org.example.park_ease.repository.UserRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -86,6 +87,7 @@ public class ParkingSlotService {
         return dto;
     }
 
+    @Transactional
     public void deleteParkingSlotById(int id, String username) {
         ParkingSlot parkingSlot = parkingSlotRepository.findById(id).orElseThrow(
                 () -> new RuntimeException("Slot not found!")

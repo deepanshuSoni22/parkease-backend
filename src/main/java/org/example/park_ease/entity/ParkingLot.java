@@ -25,7 +25,7 @@ public class ParkingLot {
 
     private Boolean isActive;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id", nullable = false)
     @JsonIgnore
     private User owner;

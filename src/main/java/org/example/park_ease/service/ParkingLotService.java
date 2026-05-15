@@ -7,6 +7,7 @@ import org.example.park_ease.entity.User;
 import org.example.park_ease.repository.ParkingLotRepository;
 import org.example.park_ease.repository.UserRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -78,6 +79,7 @@ public class ParkingLotService {
 
     }
 
+    @Transactional
     public void deleteParkingLot(int id, String username) {
 
         ParkingLot parkingLot = parkingLotRepository.findById(id).orElseThrow(
@@ -88,11 +90,10 @@ public class ParkingLotService {
             throw new RuntimeException("Authorization Failed!");
         }
 
-        // IMPORTANT: Force load the parking slots collection before deletion
-        // This ensures the cascade delete will work properly
-        parkingLot.getParkingSlot().isEmpty(); // This triggers lazy loading
+        User owner = parkingLot.getOwner();
+        owner.setParkingLot(null);
 
-        parkingLotRepository.delete(parkingLot);
+        userRepository.save(owner);
     }
 
     // Private mapper method
