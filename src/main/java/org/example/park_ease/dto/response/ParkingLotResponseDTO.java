@@ -2,12 +2,24 @@ package org.example.park_ease.dto.response;
 
 public class ParkingLotResponseDTO {
 
+    private Integer id;
     private String name;
     private String location;
     private Double hourlyRate;
     private Integer totalSlots;
     private Boolean isActive;
     private String ownerName;
+
+    public ParkingLotResponseDTO() {
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
     public String getOwnerName() {
         return ownerName;
@@ -49,11 +61,12 @@ public class ParkingLotResponseDTO {
         this.totalSlots = totalSlots;
     }
 
-    public Boolean getIsActive() {
+    public Boolean getActive() {
         return isActive;
     }
 
-    public void setIsActive(Boolean isActive) {
-        this.isActive = isActive;
+    public void setActive(Boolean active) {
+        isActive = active;
     }
+
 }

@@ -2,11 +2,20 @@ package org.example.park_ease.dto.response;
 
 public class ParkingSlotResponseDTO {
 
+    private Integer id;
     private Integer slotNumber;
     private String slotType;
     private Boolean isAvailable;
 
     public ParkingSlotResponseDTO() {
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public Integer getSlotNumber() {
@@ -25,13 +34,14 @@ public class ParkingSlotResponseDTO {
         this.slotType = slotType;
     }
 
-    public Boolean getIsAvailable() {
+    public Boolean getAvailable() {
         return isAvailable;
     }
 
-    public void setIsAvailable(Boolean isAvailable) {
-        this.isAvailable = isAvailable;
+    public void setAvailable(Boolean available) {
+        isAvailable = available;
     }
+
 }
 
 
