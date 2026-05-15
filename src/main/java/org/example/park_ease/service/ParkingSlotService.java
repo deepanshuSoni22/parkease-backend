@@ -69,7 +69,7 @@ public class ParkingSlotService {
         // Entity -> DTO
         ParkingSlotResponseDTO dto = new ParkingSlotResponseDTO();
 
-        dto.setSlotNumber(parkingSlot.getId());
+        dto.setId(parkingSlot.getId());
         dto.setSlotNumber(parkingSlot.getSlotNumber());
         dto.setSlotType(parkingSlot.getSlotType());
         dto.setAvailable(parkingSlot.getAvailable());
