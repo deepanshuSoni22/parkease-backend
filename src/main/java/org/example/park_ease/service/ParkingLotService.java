@@ -94,6 +94,8 @@ public class ParkingLotService {
         owner.setParkingLot(null);
 
         userRepository.save(owner);
+
+        parkingLotRepository.delete(parkingLot);
     }
 
     // Private mapper method
