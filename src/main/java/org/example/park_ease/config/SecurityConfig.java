@@ -86,6 +86,26 @@ public class SecurityConfig {
                                 "/api/v1/parking-slots/**"
                         ).hasRole("OWNER")
 
+                        // BOOKING ENDPOINTS
+                        // Create a booking -> only regular users should create bookings
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/api/v1/bookings"
+                        ).hasRole("USER")
+
+                        // Complete a booking -> only the booking owner (role USER) should complete their booking
+                        // pattern uses /** to match the {bookingId}/complete segment
+                        .requestMatchers(
+                                HttpMethod.PUT,
+                                "/api/v1/bookings/**"
+                        ).hasRole("USER")
+
+                        // Get my bookings -> user can list their own bookings
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/api/v1/bookings/my"
+                        ).hasRole("USER")
+
                         // ALL LOGGED-IN USERS
                         .requestMatchers(
                                 HttpMethod.GET,

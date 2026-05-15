@@ -3,6 +3,8 @@ package org.example.park_ease.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "parking_slot")
 public class ParkingSlot {
@@ -24,6 +26,17 @@ public class ParkingSlot {
     @JoinColumn(name = "lot_id", nullable = false)
     @JsonIgnore
     private ParkingLot parkingLot;
+
+    @OneToMany
+    private List<Booking> booking;
+
+    public List<Booking> getBooking() {
+        return booking;
+    }
+
+    public void setBooking(List<Booking> booking) {
+        this.booking = booking;
+    }
 
     public ParkingLot getParkingLot() {
         return parkingLot;
