@@ -52,7 +52,8 @@ public class SecurityConfig {
         configuration.setAllowedOrigins(
                 List.of(
                         "http://localhost:5500",
-                        "http://127.0.0.1:5500"
+                        "http://127.0.0.1:5500",
+                        "https://deepanshusoni22.github.io/parkease-frontend/"
                 )
         );
         configuration.setAllowedMethods(List.of("GET", "POST", "DELETE", "OPTIONS"));
