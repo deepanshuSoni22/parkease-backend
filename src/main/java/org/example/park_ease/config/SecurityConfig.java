@@ -53,7 +53,7 @@ public class SecurityConfig {
                 List.of(
                         "http://localhost:5500",
                         "http://127.0.0.1:5500",
-                        "https://deepanshusoni22.github.io/parkease-frontend/"
+                        "https://deepanshusoni22.github.io"
                 )
         );
         configuration.setAllowedMethods(List.of("GET", "POST", "DELETE", "OPTIONS"));
