@@ -6,6 +6,8 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.web.cors.CorsConfiguration;
@@ -135,7 +137,7 @@ public class ProdSecurityConfig {
     public CorsConfigurationSource prodCors() {
 
         CorsConfiguration cfg = new CorsConfiguration();
-        cfg.setAllowedOrigins(List.of("https://deepanshusoni22.github.io"));
+        cfg.setAllowedOrigins(List.of("https://deepanshusoni22.github.io/parkease-frontend"));
         cfg.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS"));
         cfg.setAllowedHeaders(List.of("Content-Type", "X-XSRF-TOKEN"));
         cfg.setAllowCredentials(true);
@@ -143,6 +145,12 @@ public class ProdSecurityConfig {
         src.registerCorsConfiguration("/**", cfg);
 
         return src;
+    }
+
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 
 }
