@@ -24,10 +24,12 @@ public class ProdSecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
+        CookieCsrfTokenRepository csrfRepo = CookieCsrfTokenRepository.withHttpOnlyFalse();
+        csrfRepo.setCookieCustomizer(c -> c.sameSite("None").secure(true));
+
         http
-                .csrf(csrf -> csrf
+                .csrf(csrf -> csrf.csrfTokenRepository(csrfRepo)
                         // expose token in cookie so JS frontend can read it
-                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                 )
                 .cors(cors -> cors.configurationSource(prodCors()))
                 .authorizeHttpRequests(auth -> auth
