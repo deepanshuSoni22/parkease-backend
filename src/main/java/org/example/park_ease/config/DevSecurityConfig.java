@@ -1,17 +1,11 @@
 package org.example.park_ease.config;
 
-import org.example.park_ease.entity.User;
-import org.example.park_ease.repository.UserRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -23,60 +17,15 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig {
-
-    private final UserRepository userRepository;
-
-    public SecurityConfig(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
-
-    @Bean
-    public UserDetailsService userDetailsService(UserRepository userRepository) {
-
-        return username -> {
-
-            User user = userRepository.findByUsername(username)
-                    .orElseThrow(() -> new UsernameNotFoundException("User not found!"));
-
-            return org.springframework.security.core.userdetails.User
-                    .builder()
-                    .username(user.getUsername())
-                    .password(user.getPassword())
-                    .roles(user.getRole().name())
-                    .build();
-        };
-
-    }
-
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(
-                List.of(
-                        "http://localhost:5500",
-                        "http://127.0.0.1:5500",
-                        "https://deepanshusoni22.github.io"
-                )
-        );
-        configuration.setAllowedMethods(List.of("GET", "POST", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
-        configuration.setExposedHeaders(List.of("Authorization"));
-        configuration.setAllowCredentials(true);
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
-
-    }
+@Profile("dev")
+public class DevSecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
-                .cors(Customizer.withDefaults())
                 .csrf(csrf -> csrf.disable())
+                .cors(cors -> cors.configurationSource(devCors()))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 HttpMethod.OPTIONS, "/**"
@@ -157,20 +106,50 @@ public class SecurityConfig {
                         // EVERYTHING ELSE
                         .anyRequest().authenticated()
                 )
-//                .httpBasic(Customizer.withDefaults());
-                .formLogin(form -> form.disable());
-
+                .formLogin(form -> form
+                        .loginProcessingUrl("/api/v1/auth/login")
+                        // No loginPage() — frontend owns the login UI
+                        .successHandler((req, res, auth) ->
+                                res.setStatus(200))                 // don't redirect, return 200
+                        .failureHandler((req, res, ex) ->
+                                res.sendError(401, "Bad credentials"))
+                        .permitAll()
+                )
+                .logout(logout -> logout
+                        .logoutUrl("/api/v1/auth/logout")
+                        .logoutSuccessHandler((req, res, auth) ->
+                                res.setStatus(200))                 // don't redirect on logout
+                )
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint((req, res, e) ->
+                                res.sendError(401, "Unauthorized")) // no redirect to /login
+                );
         return http.build();
+
+    }
+
+    @Bean
+    public CorsConfigurationSource devCors() {
+
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(
+                List.of(
+                        "http://localhost:5500",
+                        "http://127.0.0.1:5500"
+                )
+        );
+        configuration.setAllowedMethods(List.of("GET", "POST", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowCredentials(true); // needed for session cookies
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+
     }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
-        return configuration.getAuthenticationManager();
-    }
-
 }
