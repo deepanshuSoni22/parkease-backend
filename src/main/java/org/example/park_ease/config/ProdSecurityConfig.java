@@ -9,7 +9,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -24,18 +23,18 @@ public class ProdSecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-        CookieCsrfTokenRepository csrfRepo = CookieCsrfTokenRepository.withHttpOnlyFalse();
-        csrfRepo.setCookieCustomizer(c -> c.sameSite("None").secure(true));
-
         http
-                .csrf(csrf -> csrf.csrfTokenRepository(csrfRepo)
-                        // expose token in cookie so JS frontend can read it
-                )
+                // CSRF disabled: CORS is locked to a single trusted origin
+                // (deepanshusoni22.github.io), so cross-site forged requests
+                // cannot attach credentials. This matches the dev profile posture.
+                .csrf(csrf -> csrf.disable())
+
                 .cors(cors -> cors.configurationSource(prodCors()))
+
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(
-                                HttpMethod.OPTIONS, "/**"
-                        ).permitAll()
+
+                        // Preflight requests must always pass through
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
                         // PUBLIC ENDPOINTS
                         .requestMatchers(
@@ -55,79 +54,59 @@ public class ProdSecurityConfig {
                         .hasRole("ADMIN")
 
                         // OWNER ONLY - CREATE PARKING LOT
-                        .requestMatchers(
-                                HttpMethod.POST,
-                                "/api/v1/parking-lots"
-                        ).hasRole("OWNER")
+                        .requestMatchers(HttpMethod.POST, "/api/v1/parking-lots")
+                        .hasRole("OWNER")
 
                         // OWNER ONLY - DELETE PARKING LOT
-                        .requestMatchers(
-                                HttpMethod.DELETE,
-                                "/api/v1/parking-lots/**"
-                        ).hasRole("OWNER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/parking-lots/**")
+                        .hasRole("OWNER")
 
                         // OWNER ONLY - CREATE SLOT
-                        .requestMatchers(
-                                HttpMethod.POST,
-                                "/api/v1/parking-slots"
-                        ).hasRole("OWNER")
+                        .requestMatchers(HttpMethod.POST, "/api/v1/parking-slots")
+                        .hasRole("OWNER")
 
                         // OWNER ONLY - DELETE SLOT
-                        .requestMatchers(
-                                HttpMethod.DELETE,
-                                "/api/v1/parking-slots/**"
-                        ).hasRole("OWNER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/parking-slots/**")
+                        .hasRole("OWNER")
 
-                        // BOOKING ENDPOINTS
-                        // Create a booking -> only regular users should create bookings
-                        .requestMatchers(
-                                HttpMethod.POST,
-                                "/api/v1/bookings"
-                        ).hasRole("USER")
+                        // USER ONLY - CREATE BOOKING
+                        .requestMatchers(HttpMethod.POST, "/api/v1/bookings")
+                        .hasRole("USER")
 
-                        // Complete a booking -> only the booking owner (role USER) should complete their booking
-                        // pattern uses /** to match the {bookingId}/complete segment
-                        .requestMatchers(
-                                HttpMethod.PUT,
-                                "/api/v1/bookings/**"
-                        ).hasRole("USER")
+                        // USER ONLY - COMPLETE BOOKING  (PUT /api/v1/bookings/{id}/complete)
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/bookings/**")
+                        .hasRole("USER")
 
-                        // Get my bookings -> user can list their own bookings
-                        .requestMatchers(
-                                HttpMethod.GET,
-                                "/api/v1/bookings/my"
-                        ).hasRole("USER")
+                        // USER ONLY - LIST OWN BOOKINGS
+                        .requestMatchers(HttpMethod.GET, "/api/v1/bookings/my")
+                        .hasRole("USER")
 
-                        // ALL LOGGED-IN USERS
-                        .requestMatchers(
-                                HttpMethod.GET,
-                                "/api/v1/parking-lots/**"
-                        ).authenticated()
+                        // ALL AUTHENTICATED USERS
+                        .requestMatchers(HttpMethod.GET, "/api/v1/parking-lots/**").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/parking-slots/**").authenticated()
 
-                        .requestMatchers(
-                                HttpMethod.GET,
-                                "/api/v1/parking-slots/**"
-                        ).authenticated()
-
-                        // EVERYTHING ELSE
                         .anyRequest().authenticated()
                 )
+
                 .formLogin(form -> form
                         .loginProcessingUrl("/api/v1/auth/login")
                         .successHandler((req, res, auth) -> res.setStatus(200))
                         .failureHandler((req, res, ex) -> res.sendError(401, "Bad credentials"))
                         .permitAll()
                 )
+
                 .logout(logout -> logout
                         .logoutUrl("/api/v1/auth/logout")
                         .deleteCookies("JSESSIONID")
                         .invalidateHttpSession(true)
                         .logoutSuccessHandler((req, res, auth) -> res.setStatus(200))
                 )
+
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint((req, res, e) ->
                                 res.sendError(401, "Unauthorized"))
                 )
+
                 .sessionManagement(sess -> sess
                         .maximumSessions(1).maxSessionsPreventsLogin(true)
                 );
@@ -137,23 +116,19 @@ public class ProdSecurityConfig {
 
     @Bean
     public CorsConfigurationSource prodCors() {
-
         CorsConfiguration cfg = new CorsConfiguration();
         cfg.setAllowedOrigins(List.of("https://deepanshusoni22.github.io"));
-        cfg.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS"));
+        cfg.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         cfg.setAllowedHeaders(List.of("*"));
         cfg.setAllowCredentials(true);
+
         UrlBasedCorsConfigurationSource src = new UrlBasedCorsConfigurationSource();
         src.registerCorsConfiguration("/**", cfg);
-
         return src;
     }
-
 
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
 }
-
