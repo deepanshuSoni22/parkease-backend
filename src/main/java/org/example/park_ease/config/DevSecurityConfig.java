@@ -9,7 +9,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -18,18 +17,15 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
-@Profile("prod")
-public class ProdSecurityConfig {
+@Profile("dev")
+public class DevSecurityConfig {
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
-                .csrf(csrf -> csrf
-                        // expose token in cookie so JS frontend can read it
-                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                )
-                .cors(cors -> cors.configurationSource(prodCors()))
+                .csrf(csrf -> csrf.disable())
+                .cors(cors -> cors.configurationSource(devCors()))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 HttpMethod.OPTIONS, "/**"
@@ -112,45 +108,48 @@ public class ProdSecurityConfig {
                 )
                 .formLogin(form -> form
                         .loginProcessingUrl("/api/v1/auth/login")
-                        .successHandler((req, res, auth) -> res.setStatus(200))
-                        .failureHandler((req, res, ex) -> res.sendError(401, "Bad credentials"))
+                        // No loginPage() — frontend owns the login UI
+                        .successHandler((req, res, auth) ->
+                                res.setStatus(200))                 // don't redirect, return 200
+                        .failureHandler((req, res, ex) ->
+                                res.sendError(401, "Bad credentials"))
                         .permitAll()
                 )
                 .logout(logout -> logout
                         .logoutUrl("/api/v1/auth/logout")
-                        .deleteCookies("JSESSIONID")
-                        .invalidateHttpSession(true)
-                        .logoutSuccessHandler((req, res, auth) -> res.setStatus(200))
+                        .logoutSuccessHandler((req, res, auth) ->
+                                res.setStatus(200))                 // don't redirect on logout
                 )
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint((req, res, e) ->
-                                res.sendError(401, "Unauthorized"))
-                )
-                .sessionManagement(sess -> sess
-                        .maximumSessions(1).maxSessionsPreventsLogin(true)
+                                res.sendError(401, "Unauthorized")) // no redirect to /login
                 );
-
         return http.build();
+
     }
 
     @Bean
-    public CorsConfigurationSource prodCors() {
+    public CorsConfigurationSource devCors() {
 
-        CorsConfiguration cfg = new CorsConfiguration();
-        cfg.setAllowedOrigins(List.of("https://deepanshusoni22.github.io/parkease-frontend"));
-        cfg.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS"));
-        cfg.setAllowedHeaders(List.of("Content-Type", "X-XSRF-TOKEN"));
-        cfg.setAllowCredentials(true);
-        UrlBasedCorsConfigurationSource src = new UrlBasedCorsConfigurationSource();
-        src.registerCorsConfiguration("/**", cfg);
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(
+                List.of(
+                        "http://localhost:5500",
+                        "http://127.0.0.1:5500"
+                )
+        );
+        configuration.setAllowedMethods(List.of("GET", "POST", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowCredentials(true); // needed for session cookies
 
-        return src;
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+
     }
-
 
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
 }
