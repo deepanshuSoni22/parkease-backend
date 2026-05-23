@@ -5,6 +5,8 @@ import org.example.park_ease.dto.response.ParkingSlotResponseDTO;
 import org.example.park_ease.entity.ParkingLot;
 import org.example.park_ease.entity.ParkingSlot;
 import org.example.park_ease.entity.User;
+import org.example.park_ease.enums.BookingStatus;
+import org.example.park_ease.repository.BookingRepository;
 import org.example.park_ease.repository.ParkingLotRepository;
 import org.example.park_ease.repository.ParkingSlotRepository;
 import org.example.park_ease.repository.UserRepository;
@@ -19,11 +21,13 @@ public class ParkingSlotService {
     private final ParkingSlotRepository parkingSlotRepository;
     private final ParkingLotRepository parkingLotRepository;
     private final UserRepository userRepository;
+    private final BookingRepository bookingRepository;
 
-    public ParkingSlotService(ParkingSlotRepository parkingSlotRepository, ParkingLotRepository parkingLotRepository, UserRepository userRepository) {
+    public ParkingSlotService(ParkingSlotRepository parkingSlotRepository, ParkingLotRepository parkingLotRepository, UserRepository userRepository, BookingRepository bookingRepository) {
         this.parkingSlotRepository = parkingSlotRepository;
         this.parkingLotRepository = parkingLotRepository;
         this.userRepository = userRepository;
+        this.bookingRepository = bookingRepository;
     }
 
     public ParkingSlotResponseDTO getParkingSlotById(int id) {
@@ -84,6 +88,10 @@ public class ParkingSlotService {
         dto.setSlotNumber(parkingSlot.getSlotNumber());
         dto.setSlotType(parkingSlot.getSlotType());
         dto.setAvailable(parkingSlot.getAvailable());
+
+        // Find ACTIVE booking for this parking slot
+        bookingRepository.findByParkingSlotAndStatus(parkingSlot, BookingStatus.ACTIVE)
+                .ifPresent(booking -> dto.setBookedByUsername(booking.getUser().getUsername()));
 
         return dto;
     }
