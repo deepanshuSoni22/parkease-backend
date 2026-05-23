@@ -138,7 +138,7 @@ public class DevSecurityConfig {
                         "http://127.0.0.1:5500"
                 )
         );
-        configuration.setAllowedMethods(List.of("GET", "POST", "DELETE", "OPTIONS"));
+        configuration.setAllowedMethods(List.of("GET", "PUT", "POST", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true); // needed for session cookies
 

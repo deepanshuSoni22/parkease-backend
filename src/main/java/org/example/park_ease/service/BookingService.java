@@ -6,6 +6,7 @@ import org.example.park_ease.entity.Booking;
 import org.example.park_ease.entity.ParkingSlot;
 import org.example.park_ease.entity.User;
 import org.example.park_ease.enums.BookingStatus;
+import org.example.park_ease.exception.SlotNotAvailableException;
 import org.example.park_ease.repository.BookingRepository;
 import org.example.park_ease.repository.ParkingSlotRepository;
 import org.example.park_ease.repository.UserRepository;
@@ -40,7 +41,7 @@ public class BookingService {
 
         // Check if slot is available
         if (parkingSlot.getAvailable() != true) {
-            throw new RuntimeException("Parking slot is already booked!");
+            throw new SlotNotAvailableException("Parking slot is already booked!");
         }
 
         // Create Booking

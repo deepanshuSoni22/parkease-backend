@@ -9,7 +9,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -25,10 +24,7 @@ public class ProdSecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         http
-                .csrf(csrf -> csrf.disable()
-                        // expose token in cookie so JS frontend can read it
-//                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                )
+                .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(prodCors()))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
@@ -126,9 +122,6 @@ public class ProdSecurityConfig {
                         .authenticationEntryPoint((req, res, e) ->
                                 res.sendError(401, "Unauthorized"))
                 );
-//                .sessionManagement(sess -> sess
-//                        .maximumSessions(1).maxSessionsPreventsLogin(true)
-//                );
 
         return http.build();
     }
