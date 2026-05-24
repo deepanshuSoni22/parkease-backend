@@ -44,6 +44,9 @@ public class ProdSecurityConfig {
                                 "/v3/api-docs/**"
                         ).permitAll()
 
+                        // WEBSOCKET
+                        .requestMatchers("/ws/**").permitAll()
+
                         // ADMIN ONLY
                         .requestMatchers("/api/v1/admin/**")
                         .hasRole("ADMIN")

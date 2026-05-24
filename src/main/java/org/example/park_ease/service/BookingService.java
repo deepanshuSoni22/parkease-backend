@@ -6,10 +6,12 @@ import org.example.park_ease.entity.Booking;
 import org.example.park_ease.entity.ParkingSlot;
 import org.example.park_ease.entity.User;
 import org.example.park_ease.enums.BookingStatus;
+import org.example.park_ease.event.ParkingSlotAvailableEvent;
 import org.example.park_ease.exception.SlotNotAvailableException;
 import org.example.park_ease.repository.BookingRepository;
 import org.example.park_ease.repository.ParkingSlotRepository;
 import org.example.park_ease.repository.UserRepository;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,11 +24,13 @@ public class BookingService {
     private final BookingRepository bookingRepository;
     private final ParkingSlotRepository parkingSlotRepository;
     private final UserRepository userRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
-    public BookingService(BookingRepository bookingRepository, ParkingSlotRepository parkingSlotRepository, UserRepository userRepository) {
+    public BookingService(BookingRepository bookingRepository, ParkingSlotRepository parkingSlotRepository, UserRepository userRepository, ApplicationEventPublisher eventPublisher) {
         this.bookingRepository = bookingRepository;
         this.parkingSlotRepository = parkingSlotRepository;
         this.userRepository = userRepository;
+        this.eventPublisher = eventPublisher;
     }
 
     @Transactional
@@ -85,6 +89,14 @@ public class BookingService {
 
         // Save booking
         bookingRepository.save(booking);
+
+        // Publish event to notify frontend
+        eventPublisher.publishEvent(new ParkingSlotAvailableEvent(
+                this,
+                parkingSlot.getId(),
+                parkingSlot.getSlotNumber(),
+                parkingSlot.getParkingLot().getId()
+        ));
 
         // Map to DTO
         return mapToResponseDTO(booking);
