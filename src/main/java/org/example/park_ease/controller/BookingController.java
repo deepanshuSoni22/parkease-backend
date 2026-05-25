@@ -3,6 +3,7 @@ package org.example.park_ease.controller;
 import org.example.park_ease.dto.request.BookingRequestDTO;
 import org.example.park_ease.dto.response.BookingResponseDTO;
 import org.example.park_ease.service.BookingService;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,8 +25,10 @@ public class BookingController {
     }
 
     @PutMapping("/{bookingId}/complete")
+    @PreAuthorize("hasRole('ADMIN')")
     public BookingResponseDTO completeBooking(@PathVariable Integer bookingId, Authentication authentication) {
-        return bookingService.completeBooking(bookingId, authentication.getName());
+        // Admins complete any booking
+        return bookingService.completeBookingAsAdmin(bookingId);
     }
 
     @GetMapping("/my")
