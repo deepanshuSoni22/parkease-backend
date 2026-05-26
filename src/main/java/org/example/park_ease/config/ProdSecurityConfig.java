@@ -142,7 +142,7 @@ public class ProdSecurityConfig {
     public CorsConfigurationSource prodCors() {
 
         CorsConfiguration cfg = new CorsConfiguration();
-        cfg.setAllowedOrigins(List.of("https://deepanshuSoni22.github.io"));
+        cfg.setAllowedOrigins(List.of("https://deepanshusoni22.github.io"));
         cfg.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS"));
         cfg.setAllowedHeaders(List.of("*"));
         cfg.setAllowCredentials(true);
