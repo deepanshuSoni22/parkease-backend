@@ -46,6 +46,17 @@ public class ParkingSlotService {
                 .toList();
     }
 
+    public List<ParkingSlotResponseDTO> getParkingSlotsByLotId(int lotId) {
+        parkingLotRepository.findById(lotId).orElseThrow(
+                () -> new RuntimeException("ParkingLot not found!")
+        );
+
+        return parkingSlotRepository.findByParkingLot_Id(lotId)
+                .stream()
+                .map(this::mapToResponseDTO)
+                .toList();
+    }
+
     public ParkingSlotResponseDTO createParkingSlot(ParkingSlotRequestDTO requestDTO, String username) {
 
         User user = userRepository.findByUsername(username)
@@ -92,6 +103,11 @@ public class ParkingSlotService {
         // Find ACTIVE booking for this parking slot
         bookingRepository.findByParkingSlotAndStatus(parkingSlot, BookingStatus.ACTIVE)
                 .ifPresent(booking -> dto.setBookedByUsername(booking.getUser().getUsername()));
+
+        if (parkingSlot.getParkingLot() != null) {
+            dto.setParkingLotId(parkingSlot.getParkingLot().getId());
+            dto.setParkingLotName(parkingSlot.getParkingLot().getName());
+        }
 
         return dto;
     }
