@@ -16,6 +16,8 @@ public class BookingResponseDTO {
     private LocalDateTime bookedAt;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
+    private Integer durationMinutes;
+    private String bookedByUsername;
 
     public BookingResponseDTO() {
     }
@@ -98,5 +100,21 @@ public class BookingResponseDTO {
 
     public void setStartTime(LocalDateTime startTime) {
         this.startTime = startTime;
+    }
+
+    public Integer getDurationMinutes() {
+        return durationMinutes;
+    }
+
+    public void setDurationMinutes(Integer durationMinutes) {
+        this.durationMinutes = durationMinutes;
+    }
+
+    public String getBookedByUsername() {
+        return bookedByUsername;
+    }
+
+    public void setBookedByUsername(String bookedByUsername) {
+        this.bookedByUsername = bookedByUsername;
     }
 }

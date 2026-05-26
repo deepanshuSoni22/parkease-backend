@@ -27,6 +27,18 @@ public class Booking {
     private LocalDateTime startTime;
     private LocalDateTime endTime;
 
+    // NEW: Duration in minutes (e.g., 60 for 1 hour)
+    @Column(name = "duration_minutes")
+    private Integer durationMinutes;
+
+    public Integer getDurationMinutes() {
+        return durationMinutes;
+    }
+
+    public void setDurationMinutes(Integer durationMinutes) {
+        this.durationMinutes = durationMinutes;
+    }
+
     public Integer getId() {
         return id;
     }

@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -17,6 +18,7 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 @Profile("prod")
 public class ProdSecurityConfig {
 
@@ -87,13 +89,20 @@ public class ProdSecurityConfig {
                         .requestMatchers(
                                 HttpMethod.PUT,
                                 "/api/v1/bookings/**"
-                        ).hasRole("USER")
+                        ).hasAnyRole( "ADMIN", "USER")
 
                         // Get my bookings -> user can list their own bookings
                         .requestMatchers(
                                 HttpMethod.GET,
                                 "/api/v1/bookings/my"
                         ).hasRole("USER")
+
+                        // Get all bookings -> only ADMIN can list all bookings
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/api/v1/bookings",
+                                "/api/v1/bookings/**"
+                        ).hasRole("ADMIN")
 
                         // ALL LOGGED-IN USERS
                         .requestMatchers(
@@ -133,7 +142,7 @@ public class ProdSecurityConfig {
     public CorsConfigurationSource prodCors() {
 
         CorsConfiguration cfg = new CorsConfiguration();
-        cfg.setAllowedOrigins(List.of("https://deepanshusoni22.github.io"));
+        cfg.setAllowedOrigins(List.of("https://parkeasebackend.me"));
         cfg.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS"));
         cfg.setAllowedHeaders(List.of("*"));
         cfg.setAllowCredentials(true);

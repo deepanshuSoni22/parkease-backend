@@ -28,6 +28,19 @@ public class BookingController {
         return bookingService.completeBooking(bookingId, authentication.getName());
     }
 
+    // === ONLY ADMIN CAN LIST ALL BOOKINGS ===
+    @GetMapping
+    public List<BookingResponseDTO> getAllBookings(Authentication authentication) {
+        return bookingService.getAllBookings(authentication.getName());
+    }
+
+    @GetMapping("/{bookingId}")
+    public BookingResponseDTO getBooking(@PathVariable Integer bookingId, Authentication authentication) {
+        return bookingService.getBookingById(bookingId, authentication.getName());
+    }
+
+
+    // === ONLY USER WHO MADE BOOKING ====
     @GetMapping("/my")
     public List<BookingResponseDTO> getMyBookings(Authentication authentication) {
         return bookingService.getUserBookings(authentication.getName());

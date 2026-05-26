@@ -48,6 +48,12 @@ public class BookingService {
             throw new SlotNotAvailableException("Parking slot is already booked!");
         }
 
+        // Validate duration
+        Integer duration = requestDTO.getDurationMinutes();
+        if (duration == null || duration <= 0) {
+            throw new IllegalArgumentException("Duration must be greater than 0 minutes!");
+        }
+
         // Create Booking
         Booking booking = new Booking();
 
@@ -56,6 +62,7 @@ public class BookingService {
         booking.setStatus(BookingStatus.ACTIVE);
         booking.setBookedAt(LocalDateTime.now());
         booking.setStartTime(LocalDateTime.now());
+        booking.setDurationMinutes(duration);
 
         // Update Parking available to false, has been booked
         parkingSlot.setAvailable(false);
@@ -68,15 +75,9 @@ public class BookingService {
         return mapToResponseDTO(booking);
     }
 
+    /**     * Internal method for both auto and manual completion     */
     @Transactional
-    public BookingResponseDTO completeBooking(Integer bookingId, String username) {
-
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found!"));
-
-        // Get booking
-        Booking booking = bookingRepository.findByIdAndUser(bookingId, user)
-                .orElseThrow(() -> new RuntimeException("Booking not found!"));
+    protected BookingResponseDTO completeBooking(Booking booking) {
 
         // Update booking status
         booking.setStatus(BookingStatus.COMPLETED);
@@ -102,6 +103,29 @@ public class BookingService {
         return mapToResponseDTO(booking);
     }
 
+    // FOR ADMIN and USER WHO MADE BOOKING
+    @Transactional
+    public BookingResponseDTO completeBooking(Integer bookingId, String username) {
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new RuntimeException("Booking not found!"));
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found!"));
+
+        boolean isAdmin = user.getRole() != null && "ADMIN".equalsIgnoreCase(user.getRole().name());
+        boolean isOwner = booking.getUser() != null && booking.getUser().getId().equals(user.getId());
+
+        if (!isAdmin && !isOwner) {
+            throw new RuntimeException("You are not allowed to complete this booking!");
+        }
+
+        if (booking.getStatus() == BookingStatus.COMPLETED) {
+            throw new IllegalStateException("Booking is already completed!");
+        }
+
+        return completeBooking(booking);
+    }
+
     @Transactional(readOnly = true)
     public List<BookingResponseDTO> getUserBookings(String username) {
 
@@ -117,7 +141,39 @@ public class BookingService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
+    public List<BookingResponseDTO> getAllBookings(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found!"));
 
+        boolean isAdmin = user.getRole() != null && "ADMIN".equalsIgnoreCase(user.getRole().name());
+
+        if (!isAdmin) {
+            throw new RuntimeException("You are not allowed to view all bookings!");
+        }
+
+        List<Booking> bookings = bookingRepository.findAll();
+        return bookings.stream()
+                .map(this::mapToResponseDTO)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public BookingResponseDTO getBookingById(Integer bookingId, String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found!"));
+
+        boolean isAdmin = user.getRole() != null && "ADMIN".equalsIgnoreCase(user.getRole().name());
+
+        if (!isAdmin) {
+            throw new RuntimeException("You are not allowed to view this booking!");
+        }
+
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new RuntimeException("Booking not found!"));
+
+        return mapToResponseDTO(booking);
+    }
 
     private BookingResponseDTO mapToResponseDTO(Booking booking) {
         BookingResponseDTO dto = new BookingResponseDTO();
@@ -132,6 +188,8 @@ public class BookingService {
         dto.setBookedAt(booking.getBookedAt());
         dto.setStartTime(booking.getStartTime());
         dto.setEndTime(booking.getEndTime());
+        dto.setDurationMinutes(booking.getDurationMinutes());
+        dto.setBookedByUsername(booking.getUser().getUsername());
 
         return dto;
     }
