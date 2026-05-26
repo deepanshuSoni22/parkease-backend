@@ -89,13 +89,20 @@ public class ProdSecurityConfig {
                         .requestMatchers(
                                 HttpMethod.PUT,
                                 "/api/v1/bookings/**"
-                        ).hasRole("USER")
+                        ).hasAnyRole( "ADMIN", "USER")
 
                         // Get my bookings -> user can list their own bookings
                         .requestMatchers(
                                 HttpMethod.GET,
                                 "/api/v1/bookings/my"
                         ).hasRole("USER")
+
+                        // Get all bookings -> only ADMIN can list all bookings
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/api/v1/bookings",
+                                "/api/v1/bookings/**"
+                        ).hasRole("ADMIN")
 
                         // ALL LOGGED-IN USERS
                         .requestMatchers(
@@ -135,7 +142,7 @@ public class ProdSecurityConfig {
     public CorsConfigurationSource prodCors() {
 
         CorsConfiguration cfg = new CorsConfiguration();
-        cfg.setAllowedOrigins(List.of("https://deepanshusoni22.github.io"));
+        cfg.setAllowedOrigins(List.of("https://parkeasebackend.me"));
         cfg.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS"));
         cfg.setAllowedHeaders(List.of("*"));
         cfg.setAllowCredentials(true);

@@ -3,7 +3,6 @@ package org.example.park_ease.controller;
 import org.example.park_ease.dto.request.BookingRequestDTO;
 import org.example.park_ease.dto.response.BookingResponseDTO;
 import org.example.park_ease.service.BookingService;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,12 +24,23 @@ public class BookingController {
     }
 
     @PutMapping("/{bookingId}/complete")
-    @PreAuthorize("hasRole('ADMIN')")
     public BookingResponseDTO completeBooking(@PathVariable Integer bookingId, Authentication authentication) {
-        // Admins complete any booking
-        return bookingService.completeBookingAsAdmin(bookingId);
+        return bookingService.completeBooking(bookingId, authentication.getName());
     }
 
+    // === ONLY ADMIN CAN LIST ALL BOOKINGS ===
+    @GetMapping
+    public List<BookingResponseDTO> getAllBookings(Authentication authentication) {
+        return bookingService.getAllBookings(authentication.getName());
+    }
+
+    @GetMapping("/{bookingId}")
+    public BookingResponseDTO getBooking(@PathVariable Integer bookingId, Authentication authentication) {
+        return bookingService.getBookingById(bookingId, authentication.getName());
+    }
+
+
+    // === ONLY USER WHO MADE BOOKING ====
     @GetMapping("/my")
     public List<BookingResponseDTO> getMyBookings(Authentication authentication) {
         return bookingService.getUserBookings(authentication.getName());

@@ -89,13 +89,20 @@ public class DevSecurityConfig {
                         .requestMatchers(
                                 HttpMethod.PUT,
                                 "/api/v1/bookings/**"
-                        ).hasRole("USER")
+                        ).hasAnyRole( "ADMIN", "USER")
 
                         // Get my bookings -> user can list their own bookings
                         .requestMatchers(
                                 HttpMethod.GET,
                                 "/api/v1/bookings/my"
                         ).hasRole("USER")
+
+                        // Get all bookings -> only ADMIN can list all bookings
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/api/v1/bookings",
+                                "/api/v1/bookings/**"
+                        ).hasRole("ADMIN")
 
                         // ALL LOGGED-IN USERS
                         .requestMatchers(

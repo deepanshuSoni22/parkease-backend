@@ -31,7 +31,7 @@ public class Booking {
     @Column(name = "duration_minutes")
     private Integer durationMinutes;
 
-    public Integer getDurationMinutes() {x
+    public Integer getDurationMinutes() {
         return durationMinutes;
     }
 

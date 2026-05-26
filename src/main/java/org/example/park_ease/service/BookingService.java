@@ -103,6 +103,29 @@ public class BookingService {
         return mapToResponseDTO(booking);
     }
 
+    // FOR ADMIN and USER WHO MADE BOOKING
+    @Transactional
+    public BookingResponseDTO completeBooking(Integer bookingId, String username) {
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new RuntimeException("Booking not found!"));
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found!"));
+
+        boolean isAdmin = user.getRole() != null && "ADMIN".equalsIgnoreCase(user.getRole().name());
+        boolean isOwner = booking.getUser() != null && booking.getUser().getId().equals(user.getId());
+
+        if (!isAdmin && !isOwner) {
+            throw new RuntimeException("You are not allowed to complete this booking!");
+        }
+
+        if (booking.getStatus() == BookingStatus.COMPLETED) {
+            throw new IllegalStateException("Booking is already completed!");
+        }
+
+        return completeBooking(booking);
+    }
+
     @Transactional(readOnly = true)
     public List<BookingResponseDTO> getUserBookings(String username) {
 
@@ -119,7 +142,16 @@ public class BookingService {
     }
 
     @Transactional(readOnly = true)
-    public List<BookingResponseDTO> getAllBookings() {
+    public List<BookingResponseDTO> getAllBookings(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found!"));
+
+        boolean isAdmin = user.getRole() != null && "ADMIN".equalsIgnoreCase(user.getRole().name());
+
+        if (!isAdmin) {
+            throw new RuntimeException("You are not allowed to view all bookings!");
+        }
+
         List<Booking> bookings = bookingRepository.findAll();
         return bookings.stream()
                 .map(this::mapToResponseDTO)
@@ -127,22 +159,21 @@ public class BookingService {
     }
 
     @Transactional(readOnly = true)
-    public BookingResponseDTO getBookingById(Integer bookingId) {
+    public BookingResponseDTO getBookingById(Integer bookingId, String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found!"));
+
+        boolean isAdmin = user.getRole() != null && "ADMIN".equalsIgnoreCase(user.getRole().name());
+
+        if (!isAdmin) {
+            throw new RuntimeException("You are not allowed to view this booking!");
+        }
+
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new RuntimeException("Booking not found!"));
+
         return mapToResponseDTO(booking);
     }
-
-    /**     * Manual completion - only for ADMIN users (authorization handled in controller)     */
-
-    @Transactional
-    public BookingResponseDTO completeBookingAsAdmin(Integer bookingId) {
-        Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new RuntimeException("Booking not found!"));
-        return completeBooking(booking);
-    }
-
-
 
     private BookingResponseDTO mapToResponseDTO(Booking booking) {
         BookingResponseDTO dto = new BookingResponseDTO();
@@ -158,6 +189,7 @@ public class BookingService {
         dto.setStartTime(booking.getStartTime());
         dto.setEndTime(booking.getEndTime());
         dto.setDurationMinutes(booking.getDurationMinutes());
+        dto.setBookedByUsername(booking.getUser().getUsername());
 
         return dto;
     }
