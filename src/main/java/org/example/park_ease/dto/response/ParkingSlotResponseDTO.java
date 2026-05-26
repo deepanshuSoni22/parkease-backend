@@ -7,6 +7,8 @@ public class ParkingSlotResponseDTO {
     private String slotType;
     private Boolean isAvailable;
     private String bookedByUsername;
+    private Integer parkingLotId;
+    private String parkingLotName;
 
     public ParkingSlotResponseDTO() {
     }
@@ -49,6 +51,22 @@ public class ParkingSlotResponseDTO {
 
     public void setBookedByUsername(String bookedByUsername) {
         this.bookedByUsername = bookedByUsername;
+    }
+
+    public Integer getParkingLotId() {
+        return parkingLotId;
+    }
+
+    public void setParkingLotId(Integer parkingLotId) {
+        this.parkingLotId = parkingLotId;
+    }
+
+    public String getParkingLotName() {
+        return parkingLotName;
+    }
+
+    public void setParkingLotName(String parkingLotName) {
+        this.parkingLotName = parkingLotName;
     }
 }
 

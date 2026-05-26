@@ -2,7 +2,9 @@ package org.example.park_ease.controller;
 
 import org.example.park_ease.dto.request.ParkingLotRequestDTO;
 import org.example.park_ease.dto.response.ParkingLotResponseDTO;
+import org.example.park_ease.dto.response.ParkingSlotResponseDTO;
 import org.example.park_ease.service.ParkingLotService;
+import org.example.park_ease.service.ParkingSlotService;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -14,9 +16,11 @@ import java.util.List;
 public class ParkingLotController {
 
     private final ParkingLotService parkingLotService;
+    private final ParkingSlotService parkingSlotService;
 
-    public ParkingLotController(ParkingLotService parkingLotService) {
+    public ParkingLotController(ParkingLotService parkingLotService, ParkingSlotService parkingSlotService) {
         this.parkingLotService = parkingLotService;
+        this.parkingSlotService = parkingSlotService;
     }
 
     @GetMapping("/my")
@@ -27,6 +31,11 @@ public class ParkingLotController {
     @GetMapping("/{lotId}")
     public ParkingLotResponseDTO getParkingLot(@PathVariable int lotId) {
         return parkingLotService.getParkingLotById(lotId);
+    }
+
+    @GetMapping("/{lotId}/slots")
+    public List<ParkingSlotResponseDTO> getParkingSlotsByLot(@PathVariable int lotId) {
+        return parkingSlotService.getParkingSlotsByLotId(lotId);
     }
 
     @GetMapping
