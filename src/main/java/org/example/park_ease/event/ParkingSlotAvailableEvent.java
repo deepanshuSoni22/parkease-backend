@@ -1,14 +1,11 @@
 package org.example.park_ease.event;
 
-import org.springframework.context.ApplicationEvent;
-
-public class ParkingSlotAvailableEvent extends ApplicationEvent {
+public class ParkingSlotAvailableEvent {
     private final Integer slotId;
     private final Integer slotNumber;
     private final Integer parkingLotId;
 
-    public ParkingSlotAvailableEvent(Object source, Integer slotId, Integer slotNumber, Integer parkingLotId) {
-        super(source);
+    public ParkingSlotAvailableEvent(Integer slotId, Integer slotNumber, Integer parkingLotId) {
         this.slotId = slotId;
         this.slotNumber = slotNumber;
         this.parkingLotId = parkingLotId;

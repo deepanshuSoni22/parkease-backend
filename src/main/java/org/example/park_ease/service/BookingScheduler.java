@@ -16,11 +16,11 @@ import java.util.List;
 public class BookingScheduler {
 
     private final BookingRepository bookingRepository;
-    private final ApplicationEventPublisher eventPublisher;
+    private final BookingService bookingService;
 
-    public BookingScheduler(BookingRepository bookingRepository, ApplicationEventPublisher eventPublisher) {
+    public BookingScheduler(BookingRepository bookingRepository, BookingService bookingService) {
         this.bookingRepository = bookingRepository;
-        this.eventPublisher = eventPublisher;
+        this.bookingService = bookingService;
     }
 
     // Runs every minute to check and auto-complete expired bookings
@@ -39,7 +39,9 @@ public class BookingScheduler {
                 .toList();
 
         for (Booking booking : expiredBookings) {
-            completeBookingAutomatically(booking);
+            if (booking.getStatus() != BookingStatus.COMPLETED) {
+                bookingService.completeBookingInternal(booking);
+            }
         }
     }
 
@@ -51,25 +53,5 @@ public class BookingScheduler {
         LocalDateTime expiryTime = booking.getStartTime().plusMinutes(booking.getDurationMinutes());
         return now.isAfter(expiryTime) || now.isEqual(expiryTime);
     }
-
-    private void completeBookingAutomatically(Booking booking) {
-        booking.setStatus(BookingStatus.COMPLETED);
-        booking.setEndTime(LocalDateTime.now());
-
-        bookingRepository.save(booking);
-
-        // Make slot available again
-        var parkingSlot = booking.getParkingSlot();
-        parkingSlot.setAvailable(true);
-
-        // Publish event to notify frontend
-        eventPublisher.publishEvent(new ParkingSlotAvailableEvent(
-                this,
-                parkingSlot.getId(),
-                parkingSlot.getSlotNumber(),
-                parkingSlot.getParkingLot().getId()
-        ));
-    }
-
 
 }
