@@ -77,7 +77,7 @@ public class BookingService {
 
     /**     * Internal method for both auto and manual completion     */
     @Transactional
-    protected BookingResponseDTO completeBooking(Booking booking) {
+    protected BookingResponseDTO completeBookingInternal(Booking booking) {
 
         // Update booking status
         booking.setStatus(BookingStatus.COMPLETED);
@@ -93,7 +93,6 @@ public class BookingService {
 
         // Publish event to notify frontend
         eventPublisher.publishEvent(new ParkingSlotAvailableEvent(
-                this,
                 parkingSlot.getId(),
                 parkingSlot.getSlotNumber(),
                 parkingSlot.getParkingLot().getId()
@@ -123,7 +122,7 @@ public class BookingService {
             throw new IllegalStateException("Booking is already completed!");
         }
 
-        return completeBooking(booking);
+        return completeBookingInternal(booking);
     }
 
     @Transactional(readOnly = true)
