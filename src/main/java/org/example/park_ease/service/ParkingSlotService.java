@@ -75,8 +75,8 @@ public class ParkingSlotService {
 
         parkingSlot.setSlotNumber(requestDTO.getSlotNumber());
         parkingSlot.setSlotType(requestDTO.getSlotType());
-        parkingSlot.setAvailable(requestDTO.getIsAvailable());
-
+        parkingSlot.setAvailable(requestDTO.getAvailable());
+        parkingSlot.setPricePerMinute(requestDTO.getPricePerMinute());
 
         // Saving to Database
         parkingSlotRepository.save(parkingSlot);
@@ -88,6 +88,7 @@ public class ParkingSlotService {
         dto.setSlotNumber(parkingSlot.getSlotNumber());
         dto.setSlotType(parkingSlot.getSlotType());
         dto.setAvailable(parkingSlot.getAvailable());
+        dto.setPricePerMinute(parkingSlot.getPricePerMinute());
 
         return dto;
     }
@@ -99,6 +100,7 @@ public class ParkingSlotService {
         dto.setSlotNumber(parkingSlot.getSlotNumber());
         dto.setSlotType(parkingSlot.getSlotType());
         dto.setAvailable(parkingSlot.getAvailable());
+        dto.setPricePerMinute(parkingSlot.getPricePerMinute());
 
         // Find ACTIVE booking for this parking slot
         bookingRepository.findByParkingSlotAndStatus(parkingSlot, BookingStatus.ACTIVE)

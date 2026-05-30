@@ -2,6 +2,7 @@ package org.example.park_ease.dto.response;
 
 import org.example.park_ease.enums.BookingStatus;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public class BookingResponseDTO {
@@ -18,6 +19,7 @@ public class BookingResponseDTO {
     private LocalDateTime endTime;
     private Integer durationMinutes;
     private String bookedByUsername;
+//    private BigDecimal amount;
 
     public BookingResponseDTO() {
     }
@@ -117,4 +119,12 @@ public class BookingResponseDTO {
     public void setBookedByUsername(String bookedByUsername) {
         this.bookedByUsername = bookedByUsername;
     }
+
+//    public BigDecimal getAmount() {
+//        return amount;
+//    }
+//
+//    public void setAmount(BigDecimal amount) {
+//        this.amount = amount;
+//    }
 }

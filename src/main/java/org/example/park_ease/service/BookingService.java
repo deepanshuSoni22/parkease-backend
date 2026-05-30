@@ -15,6 +15,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -63,6 +64,13 @@ public class BookingService {
         booking.setBookedAt(LocalDateTime.now());
         booking.setStartTime(LocalDateTime.now());
         booking.setDurationMinutes(duration);
+
+//        // amount calculation
+//        BigDecimal amount = parkingSlot.getPricePerMinute().multiply(
+//                BigDecimal.valueOf(requestDTO.getDurationMinutes())
+//        );
+//        // set amount
+//        booking.setAmount(amount);
 
         // Update Parking available to false, has been booked
         parkingSlot.setAvailable(false);
@@ -189,6 +197,7 @@ public class BookingService {
         dto.setEndTime(booking.getEndTime());
         dto.setDurationMinutes(booking.getDurationMinutes());
         dto.setBookedByUsername(booking.getUser().getUsername());
+//        dto.setAmount(booking.getAmount());
 
         return dto;
     }

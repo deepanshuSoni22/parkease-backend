@@ -3,6 +3,7 @@ package org.example.park_ease.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Entity
@@ -19,16 +20,21 @@ public class ParkingSlot {
     @Column(name = "slot_type")
     private String slotType;
 
-    @Column(name = "is_available")
-    private Boolean isAvailable;
+    @Column(name = "available")
+    private Boolean available;
 
     @ManyToOne
     @JoinColumn(name = "lot_id", nullable = false)
     @JsonIgnore
     private ParkingLot parkingLot;
 
-    @OneToMany
+    @OneToMany(mappedBy = "parkingSlot")
     private List<Booking> booking;
+
+    private BigDecimal pricePerMinute;
+
+    public ParkingSlot() {
+    }
 
     public List<Booking> getBooking() {
         return booking;
@@ -55,11 +61,11 @@ public class ParkingSlot {
     }
 
     public Boolean getAvailable() {
-        return isAvailable;
+        return available;
     }
 
     public void setAvailable(Boolean available) {
-        isAvailable = available;
+        this.available = available;
     }
 
     public String getSlotType() {
@@ -78,6 +84,11 @@ public class ParkingSlot {
         this.slotNumber = slotNumber;
     }
 
-    public ParkingSlot() {
+    public BigDecimal getPricePerMinute() {
+        return pricePerMinute;
+    }
+
+    public void setPricePerMinute(BigDecimal pricePerMinute) {
+        this.pricePerMinute = pricePerMinute;
     }
 }

@@ -47,8 +47,6 @@ public class ParkingLotService {
 
         parkingLot.setName(requestDTO.getName());
         parkingLot.setLocation(requestDTO.getLocation());
-        parkingLot.setHourlyRate(requestDTO.getHourlyRate());
-        parkingLot.setTotalSlots(requestDTO.getTotalSlots());
         parkingLot.setActive(requestDTO.getActive());
 
         // backend-controller user
@@ -105,8 +103,6 @@ public class ParkingLotService {
         dto.setId(parkingLot.getId());
         dto.setName(parkingLot.getName());
         dto.setLocation(parkingLot.getLocation());
-        dto.setHourlyRate(parkingLot.getHourlyRate());
-        dto.setTotalSlots(parkingLot.getTotalSlots());
         dto.setActive(parkingLot.getActive());
         dto.setOwnerName(parkingLot.getOwner().getUsername());
         return dto;

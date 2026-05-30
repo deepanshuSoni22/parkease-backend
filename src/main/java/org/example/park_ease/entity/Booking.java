@@ -3,6 +3,7 @@ package org.example.park_ease.entity;
 import jakarta.persistence.*;
 import org.example.park_ease.enums.BookingStatus;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -30,6 +31,10 @@ public class Booking {
     // NEW: Duration in minutes (e.g., 60 for 1 hour)
     @Column(name = "duration_minutes")
     private Integer durationMinutes;
+
+//    private BigDecimal pricePerMinuteAtBooking;
+
+//    private BigDecimal amount;
 
     public Integer getDurationMinutes() {
         return durationMinutes;
@@ -94,4 +99,20 @@ public class Booking {
     public void setEndTime(LocalDateTime endTime) {
         this.endTime = endTime;
     }
+
+//    public BigDecimal getPricePerMinuteAtBooking() {
+//        return pricePerMinuteAtBooking;
+//    }
+//
+//    public void setPricePerMinuteAtBooking(BigDecimal pricePerMinuteAtBooking) {
+//        this.pricePerMinuteAtBooking = pricePerMinuteAtBooking;
+//    }
+//
+//    public BigDecimal getAmount() {
+//        return amount;
+//    }
+//
+//    public void setAmount(BigDecimal amount) {
+//        this.amount = amount;
+//    }
 }

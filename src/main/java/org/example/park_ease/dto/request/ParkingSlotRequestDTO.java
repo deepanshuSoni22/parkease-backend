@@ -1,10 +1,13 @@
 package org.example.park_ease.dto.request;
 
+import java.math.BigDecimal;
+
 public class ParkingSlotRequestDTO {
 
     private Integer slotNumber;
     private String slotType;
-    private Boolean isAvailable;
+    private Boolean available;
+    private BigDecimal pricePerMinute;
 
     public ParkingSlotRequestDTO() {
     }
@@ -17,12 +20,12 @@ public class ParkingSlotRequestDTO {
         this.slotType = slotType;
     }
 
-    public Boolean getIsAvailable() {
-        return isAvailable;
+    public Boolean getAvailable() {
+        return available;
     }
 
-    public void setIsAvailable(Boolean isAvailable) {
-        this.isAvailable = isAvailable;
+    public void setAvailable(Boolean available) {
+        this.available = available;
     }
 
     public Integer getSlotNumber() {
@@ -31,5 +34,13 @@ public class ParkingSlotRequestDTO {
 
     public void setSlotNumber(Integer slotNumber) {
         this.slotNumber = slotNumber;
+    }
+
+    public BigDecimal getPricePerMinute() {
+        return pricePerMinute;
+    }
+
+    public void setPricePerMinute(BigDecimal pricePerMinute) {
+        this.pricePerMinute = pricePerMinute;
     }
 }

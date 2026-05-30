@@ -19,8 +19,6 @@ public class ParkingLot {
     @Column(nullable = false)
     private String location;
 
-    private Double hourlyRate;
-
     private Integer totalSlots;
 
     private Boolean isActive;
@@ -35,15 +33,15 @@ public class ParkingLot {
             orphanRemoval = true)
     private List<ParkingSlot> parkingSlot;
 
+    public ParkingLot() {
+    }
+
     public List<ParkingSlot> getParkingSlot() {
         return parkingSlot;
     }
 
     public void setParkingSlot(List<ParkingSlot> parkingSlot) {
         this.parkingSlot = parkingSlot;
-    }
-
-    public ParkingLot() {
     }
 
     public User getOwner() {
@@ -53,7 +51,6 @@ public class ParkingLot {
     public void setOwner(User owner) {
         this.owner = owner;
     }
-
 
     public Integer getId() {
         return id;
@@ -77,14 +74,6 @@ public class ParkingLot {
 
     public void setLocation(String location) {
         this.location = location;
-    }
-
-    public Double getHourlyRate() {
-        return hourlyRate;
-    }
-
-    public void setHourlyRate(Double hourlyRate) {
-        this.hourlyRate = hourlyRate;
     }
 
     public Integer getTotalSlots() {
