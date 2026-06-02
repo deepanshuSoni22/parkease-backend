@@ -60,11 +60,14 @@ public class BookingScheduler {
         }
     }
 
-    // Runs every 5 minutes to clean up stale PENDING_PAYMENT bookings
-    @Scheduled(cron = "0 */5 * * * *")
+    // Runs every 30 seconds to clean up stale PENDING_PAYMENT bookings
+    // Reduced interval to minimize slot hold latency while keeping load low for small-scale deployments
+    @Scheduled(cron = "*/30 * * * * *")
     @Transactional
     public void cleanupStalePendingPayments() {
         LocalDateTime now = LocalDateTime.now();
+
+        long start = System.currentTimeMillis();
 
         List<Booking> pending = bookingRepository.findByStatus(BookingStatus.PENDING_PAYMENT);
 
@@ -99,6 +102,9 @@ public class BookingScheduler {
                 log.error("Failed to cleanup stale PENDING_PAYMENT booking id={}", booking.getId(), e);
             }
         }
+
+        long durationMs = System.currentTimeMillis() - start;
+        log.info("BookingScheduler: cleanupStalePendingPayments completed in {} ms, processed {} bookings", durationMs, stale.size());
     }
 
     private boolean isBookingExpired(Booking booking, LocalDateTime now) {
