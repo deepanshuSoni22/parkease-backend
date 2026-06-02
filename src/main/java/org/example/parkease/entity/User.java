@@ -22,7 +22,9 @@ public class User {
     @OneToOne(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
     private ParkingLot parkingLot;
 
-    @OneToMany
+    @OneToMany(mappedBy = "user",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
     private List<Booking> booking;
 
     @Enumerated(EnumType.STRING)
